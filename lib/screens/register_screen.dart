@@ -68,7 +68,8 @@ class RegisterScreen extends StatelessWidget {
                 Text(
                   'already have an account?',
                   style: TextStyle(
-                      color: Colors.white
+                      color: Colors.white,
+                    fontSize: 16,
                   ),
                 ),
                 TextButton(
