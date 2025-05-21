@@ -11,9 +11,7 @@ import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import '../helper/show_snack_bar.dart';
 import 'chat_screen.dart';
 
-
 class LoginScreen extends StatelessWidget {
-
   String? email, password;
 
   bool isLoading = false;
@@ -21,18 +19,17 @@ class LoginScreen extends StatelessWidget {
   static String id = 'LoginScreen';
   GlobalKey<FormState> formKey = GlobalKey();
 
-
   @override
   Widget build(BuildContext context) {
-    return BlocListener<LoginCubit , LoginState>(
+    return BlocListener<LoginCubit, LoginState>(
       listener: (context, state) {
-       if(state is LoginLoaded){
-         isLoading = true ;
-       }else if(state is LoginSuccess){
-         Navigator.pushNamed(context, ChatScreen.id);
-       }else if(state is LoginFailure){
-         showSnackBar(context, "Fail Loaded");
-       }
+        if (state is LoginLoaded) {
+          isLoading = true;
+        } else if (state is LoginSuccess) {
+          Navigator.pushNamed(context, ChatScreen.id);
+        } else if (state is LoginFailure) {
+          showSnackBar(context, state.errorMsg);
+        }
       },
       child: ModalProgressHUD(
         inAsyncCall: isLoading,
@@ -44,11 +41,8 @@ class LoginScreen extends StatelessWidget {
               key: formKey,
               child: ListView(
                 children: [
-                  SizedBox(height: 40,),
-                  Image.asset(
-                    'assets/images/scholar.png',
-                    height: 100,
-                  ),
+                  SizedBox(height: 40),
+                  Image.asset('assets/images/scholar.png', height: 100),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -62,30 +56,27 @@ class LoginScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  SizedBox(height: 70,),
+                  SizedBox(height: 70),
                   Row(
                     children: [
                       Text(
                         'Sign In',
                         style: TextStyle(
-                            fontSize: 24,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold),
+                          fontSize: 24,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),
-                  SizedBox(
-                    height: 20,
-                  ),
+                  SizedBox(height: 20),
                   CustomTextFormField(
                     onChanged: (data) {
                       email = data;
                     },
                     hintText: 'Email',
                   ),
-                  SizedBox(
-                    height: 20,
-                  ),
+                  SizedBox(height: 20),
                   CustomTextFormField(
                     obSecure: true,
                     onChanged: (data) {
@@ -93,36 +84,19 @@ class LoginScreen extends StatelessWidget {
                     },
                     hintText: 'Password',
                   ),
-                  SizedBox(
-                    height: 30,
-                  ),
+                  SizedBox(height: 30),
                   CustomButton(
                     onTap: () async {
                       if (formKey.currentState!.validate()) {
-                        isLoading = true;
-                        try {
-                          await loginUser();
-                          Navigator.pushNamed(context, ChatScreen.id,
-                              arguments: email);
-                        } on FirebaseAuthException catch (e) {
-                          if (e.code == 'user-not-found') {
-                            print('No user found for that email.');
-                          } else if (e.code == 'wrong-password') {
-                            print('Wrong password provided for that user.');
-                          }
-                        } catch (ex) {
-                          showSnackBar(context, 'there is was an error');
-                        }
-                        isLoading = false;
+                        BlocProvider.of<LoginCubit>(context).loginUser(
+                            email: email!, password: password!);
                       } else {
 
                       }
                     },
                     txt: 'LOGIN',
                   ),
-                  SizedBox(
-                    height: 5,
-                  ),
+                  SizedBox(height: 5),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -136,9 +110,7 @@ class LoginScreen extends StatelessWidget {
                         },
                         child: Text(
                           ' SIGN UP',
-                          style: TextStyle(
-                            color: Color(0xffc7ede6),
-                          ),
+                          style: TextStyle(color: Color(0xffc7ede6)),
                         ),
                       ),
                     ],
